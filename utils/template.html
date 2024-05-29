@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>femview</title>
+        <meta charset="utf-8">
+        <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/" } }</script>
+        <style>
+            body { margin: 0}
+            #canvas {
+                position:fixed;
+                top:0;
+                left:0;
+            }
+            /* styling used  for the Termino.js - terminal demo(s) */   
+            #repl {
+                position: absolute;
+                bottom:0;
+                left:0;
+                z-index: 10;
+                text-shadow: none;
+                color: #91a16a;
+                background: #333;
+                padding: 0;
+                text-align: left;
+                width: 25%;
+                margin-left: 30px;
+                margin-bottom: 30px;
+                border-radius: 10px;
+                border: 1px solid #444;
+                overflow:hidden;
+            }
+
+            .repl code {
+                height: 200px;
+                overflow-y: scroll;
+            }
+
+            pre {
+                margin: 0;
+            }
+
+            .termino-console {
+                padding: 11px 16px;
+                display: block;
+            }
+
+            .termino-input-container {
+                display: flex;
+            }
+
+            .termino-input-container > * {
+                outline: none;
+                border: none;
+                white-space: pre-wrap;
+                font-family: monospace;
+                color: #ddc173;
+                background: #222;
+                min-height: 14px; /* minimum one line */
+                padding: 10px;
+                margin: 0;
+                border-radius: 0 0 3px 3px;
+                border-top: 1px solid #444;
+            }
+
+            .termino-input {
+                flex: 1;
+                height: 100%; /* start off one line tall */
+                padding-left: 0;
+            }
+
+            .termino-prompt {
+                font-weight: bold;
+                padding: 8px 10px;
+            }
+
+            @media screen and (max-width : 800px) {
+
+                .repl {
+                    width: 100%;
+                }
+
+            }
+
+            .lua {
+            resize:none;
+            overflow:hidden;
+            }
+
+            pre{
+                word-break: break-all;
+                white-space: pre-line;
+            }
+
+            .repl code{
+                scroll-behavior:smooth;
+            }
+
+            /* hide scrollbar but allow scrolling */
+            .repl code {
+            -ms-overflow-style: none; /* for Internet Explorer, Edge */
+            scrollbar-width: none; /* for Firefox */
+            overflow-y: scroll; 
+            }
+
+            .repl code::-webkit-scrollbar {
+            display: none; /* for Chrome, Safari, and Opera */
+            }
+
+
+            .loading:after {
+            content: ' .';
+            animation: dots 1s steps(5, end) infinite;
+            }
+
+            @keyframes dots {
+            0%, 20% {
+                color: rgba(0,0,0,0);
+                text-shadow:
+                .25em 0 0 rgba(0,0,0,0),
+                .5em 0 0 rgba(0,0,0,0);}
+            40% {
+                color: white;
+                text-shadow:
+                .25em 0 0 rgba(0,0,0,0),
+                .5em 0 0 rgba(0,0,0,0);}
+            60% {
+                text-shadow:
+                .25em 0 0 white,
+                .5em 0 0 rgba(0,0,0,0);}
+            80%, 100% {
+                text-shadow:
+                .25em 0 0 white,
+                .5em 0 0 white;}}
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas">
+            <script type="module">
+                REPLACE_ME
+            </script>
+        </canvas>
+        <section id="terminal" class="section--standalone">
+            <div id="repl">
+                <code class="termino-console">
+                    <pre></pre>
+                    <pre>List all function available by typing 'help'</pre>
+                    <pre></pre>
+                </code>
+                <div class="termino-input-container">
+                    <label id="termino-prompt" for="termino-iunput">→</label>
+                    <textarea class="termino-input" rows="1" wrap="hard" placeholder="..."></textarea>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>
