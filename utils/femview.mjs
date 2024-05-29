@@ -11,7 +11,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 // TODO: Add stuff to group
-let color = 0xFFFFFF
+let color = 0X91a16a
 
 // Points
 var point_geometry = new THREE.BufferGeometry();
@@ -47,10 +47,9 @@ camera.position.set( -frustumSize, frustumSize, frustumSize );
 let controls = new OrbitControls( camera, renderer.domElement );
 
 // lights
-const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
-scene.add( ambientLight );
-var pointLight = new THREE.PointLight( 0xffffff, 0.9 );
-camera.add( pointLight );
+// var light = new THREE.PointLight( 0xffffff, 0.9 );
+// camera.add( light );
+// scene.add( camera );
 
 // Resize event loop
 // const canvas = document.getElementById( "body" );

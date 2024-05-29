@@ -4,7 +4,7 @@ from pyNastran.bdf.bdf import BDF
 import ipdb
 
 model = BDF()
-model.read_bdf('../pyNastran/models/iSat/ISat_Dploy_Sm.dat')
+model.read_bdf('../../pyNastran/models/iSat/ISat_Dploy_Sm.dat')
 
 # Loop through nodes
 nids = []
@@ -15,23 +15,22 @@ for nid, node in sorted(model.nodes.items()):
     # Swap Y and Z to account for three.js convention
     nodes.extend([xyz[0], xyz[2], xyz[1]])
 
-
 # Loop through elements
 faces = []
 for eid, element in sorted(model.elements.items()):
     if len(element.nodes) == 4:
-        faces.append([
+        faces.extend([
             nids.index(element.nodes[0]),
             nids.index(element.nodes[1]),
             nids.index(element.nodes[2]),
         ])
-        faces.append([
+        faces.extend([
             nids.index(element.nodes[0]),
             nids.index(element.nodes[2]),
             nids.index(element.nodes[3]),
         ])
     elif len(element.nodes) == 3:
-        faces.append([
+        faces.extend([
             nids.index(element.nodes[0]),
             nids.index(element.nodes[1]),
             nids.index(element.nodes[2]),
