@@ -1,21 +1,26 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+// Things to replace
+let nodes = REPLACE_NODES;
+let face_indices = REPLACE_FACES;
+let line_indices = REPLACE_LINES;
+
 // Create scene
 let scene = new THREE.Scene();
 let group = new THREE.Group();
 
 const canvas = document.getElementById('canvas');
-let renderer = new THREE.WebGLRenderer({ canvas: canvas });
+let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 // TODO: Add stuff to group
-let color = 0xFFFFFF
+let color = 0X91a16a
 
 // Points
 var point_geometry = new THREE.BufferGeometry();
-var grids = new Float32Array(REPLACE_NODES);
+var grids = new Float32Array(nodes);
 point_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3 ));
 var point_material = new THREE.PointsMaterial( { color: color, size: 0, map: null} );
 var points = new THREE.Points( point_geometry, point_material );
@@ -23,14 +28,24 @@ group.add(points)
 
 // Faces
 var face_geometry = new THREE.BufferGeometry();
-var face_indices = REPLACE_FACES
-const face_material = new THREE.MeshBasicMaterial( { color: color } );
+const face_material = new THREE.MeshPhongMaterial( { color: color } );
 face_material.transparent = true;
 face_material.side = THREE.DoubleSide;
 face_geometry.setIndex( face_indices );
 face_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
 const faces = new THREE.Mesh( face_geometry, face_material );
+faces.name = "face";
 group.add(faces)
+
+// Lines
+var line_geometry = new THREE.BufferGeometry();
+var line_material = new THREE.LineBasicMaterial( {color: color, linewidth: 10} );
+line_material.transparent = true;
+line_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
+line_geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(line_indices), 1));
+var lines = new THREE.LineSegments(line_geometry, line_material);
+lines.name = "face";
+group.add(lines)
 
 // Add to scene
 scene.add(group)
