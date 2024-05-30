@@ -5,9 +5,13 @@
         <meta charset="utf-8">
         <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/" } }</script>
         <style>
-            body { margin: 0}
+            body {
+                margin: 0;
+                background: black;
+            }
             #canvas {
                 position:fixed;
+                background: black;
                 top:0;
                 left:0;
             }
@@ -136,7 +140,8 @@
     <body>
         <canvas id="canvas">
             <script type="module">
-                REPLACE_ME
+                REPLACE_VIEWHELPER
+                REPLACE_FEMVIEW
             </script>
         </canvas>
         <section id="terminal" class="section--standalone">
