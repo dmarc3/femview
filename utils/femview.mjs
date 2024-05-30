@@ -13,6 +13,8 @@ let group = new THREE.Group();
 const canvas = document.getElementById('canvas');
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.autoClear = false;
 document.body.appendChild( renderer.domElement );
 
 // TODO: Add stuff to group
@@ -58,6 +60,7 @@ let frustumSize = size.length() * 2;
 let camera = new THREE.OrthographicCamera( -frustumSize / 2, frustumSize / 2, frustumSize*aspect / 2, -frustumSize*aspect / 2, 0.1, frustumSize*5 );
 camera.position.set( -frustumSize, frustumSize, frustumSize );
 // camera.lookAt( bbox.getCenter( new THREE.Vector3() ) );
+
 // Controls
 let controls = new OrbitControls( camera, renderer.domElement );
 
@@ -80,14 +83,24 @@ function onWindowResize() {
     camera.aspect = getWidth() / getHeight();
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
+    controls.handleResize();
 }
 
-// Animation loop
-function animate() {
-    requestAnimationFrame( animate );
-    renderer.render( scene, camera );
-}
-animate();
+// ViewHelper
+let clock = new THREE.Clock();
+let view = new ViewHelper( camera, renderer.domElement );
+// view.controls = controls;
+view.center = controls.target;
+const div = document.createElement( 'div' );
+div.id = 'viewHelper';
+div.style.position = 'absolute';
+div.style.right = 0;
+div.style.bottom = 0;
+div.style.height = '128px';
+div.style.width = '128px';
+document.body.appendChild( div );
+div.addEventListener( 'pointerup', (event) => view.handleClick( event ) );
+
 
 // Terminal stuff
 import {Termino} from 'https://cdn.jsdelivr.net/gh/MarketingPipeline/Termino.js@v1.0.0/dist/termino.min.js';
@@ -119,3 +132,13 @@ async function terminalFunc() {
     terminalFunc();
 }
 terminalFunc();
+
+// Animation loop
+function animate() {
+    requestAnimationFrame( animate );
+    renderer.render( scene, camera );
+    const delta = clock.getDelta();
+    if ( view.animating ) view.update( delta );
+    view.render( renderer );
+}
+animate();
