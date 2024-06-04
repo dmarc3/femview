@@ -3,7 +3,8 @@ from pyNastran.bdf.bdf import BDF
 import ipdb
 
 model = BDF()
-model.read_bdf('../../pyNastran/models/iSat/ISat_Dploy_Sm.dat')
+model.read_bdf('../../pyNastran/models/iSat/ISat_Dploy_Sm.dat', xref=True)
+ipdb.set_trace()
 
 # Loop through nodes
 nids = []
@@ -25,7 +26,7 @@ def square(nids, nodes):
         nids.index(nodes[2]),
         nids.index(nodes[3]),
     ]
-    lines = [
+    wires = [
         # First edge
         nids.index(nodes[0]),
         nids.index(nodes[1]),
@@ -39,7 +40,7 @@ def square(nids, nodes):
         nids.index(nodes[3]),
         nids.index(nodes[0]),
     ]
-    return faces, lines
+    return faces, wires
 
 def tri(nids, nodes):
     faces = [
@@ -48,7 +49,7 @@ def tri(nids, nodes):
         nids.index(nodes[1]),
         nids.index(nodes[2]),
     ]
-    lines = [
+    wires = [
         # First edge
         nids.index(nodes[0]),
         nids.index(nodes[1]),
@@ -59,10 +60,11 @@ def tri(nids, nodes):
         nids.index(nodes[2]),
         nids.index(nodes[0]),
     ]
-    return faces, lines
+    return faces, wires
 
 # Loop through elements
 lines = []
+wires = []
 faces = []
 for eid, element in sorted(model.elements.items()):
     # CHEXAs
@@ -70,37 +72,37 @@ for eid, element in sorted(model.elements.items()):
         # Face 1
         out = square(nids, [element.nodes[0], element.nodes[1], element.nodes[2], element.nodes[3]])
         faces.extend(out[0])
-        lines.extend(out[1])
+        wires.extend(out[1])
         # Face 2
         out = square(nids, [element.nodes[4], element.nodes[5], element.nodes[6], element.nodes[7]])
         faces.extend(out[0])
-        lines.extend(out[1])
+        wires.extend(out[1])
         # Face 3
         out = square(nids, [element.nodes[0], element.nodes[1], element.nodes[5], element.nodes[4]])
         faces.extend(out[0])
-        lines.extend(out[1])
+        wires.extend(out[1])
         # Face 4
         out = square(nids, [element.nodes[1], element.nodes[5], element.nodes[6], element.nodes[2]])
         faces.extend(out[0])
-        lines.extend(out[1])
+        wires.extend(out[1])
         # Face 5
         out = square(nids, [element.nodes[2], element.nodes[6], element.nodes[7], element.nodes[3]])
         faces.extend(out[0])
-        lines.extend(out[1])
+        wires.extend(out[1])
         # Face 6
         out = square(nids, [element.nodes[0], element.nodes[4], element.nodes[7], element.nodes[3]])
         faces.extend(out[0])
-        lines.extend(out[1])
+        wires.extend(out[1])
     # CQUAD4s
     elif len(element.nodes) == 4:
         out = square(nids, element.nodes)
         faces.extend(out[0])
-        lines.extend(out[1])
+        wires.extend(out[1])
     # CTRIA3s
     elif len(element.nodes) == 3:
         out = tri(nids, element.nodes)
         faces.extend(out[0])
-        lines.extend(out[1])
+        wires.extend(out[1])
     # CBARs
     elif len(element.nodes) == 2:
         lines.extend([
@@ -117,6 +119,9 @@ with open('nodes.txt', 'w') as f:
 
 with open('faces.txt', 'w') as f:
     f.write(str(faces).replace(' ', ''))
+
+with open('wires.txt', 'w') as f:
+    f.write(str(wires).replace(' ', ''))
 
 with open('lines.txt', 'w') as f:
     f.write(str(lines).replace(' ', ''))

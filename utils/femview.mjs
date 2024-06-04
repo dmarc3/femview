@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // Things to replace
 let nodes = REPLACE_NODES;
 let face_indices = REPLACE_FACES;
+let wire_indices = REPLACE_WIRES;
 let line_indices = REPLACE_LINES;
 
 // Create scene
@@ -24,7 +25,7 @@ let color = 0X91a16a
 var point_geometry = new THREE.BufferGeometry();
 var grids = new Float32Array(nodes);
 point_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3 ));
-var point_material = new THREE.PointsMaterial( { color: color, size: 0, map: null} );
+var point_material = new THREE.PointsMaterial( { color: 0x000000, map: null} );
 var points = new THREE.Points( point_geometry, point_material );
 group.add(points)
 
@@ -38,6 +39,14 @@ face_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
 const faces = new THREE.Mesh( face_geometry, face_material );
 faces.name = "face";
 group.add(faces)
+// Wires
+var wire_geometry = new THREE.BufferGeometry();
+var wire_material = new THREE.LineBasicMaterial( {color: 0x000000} );
+wire_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
+wire_geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(wire_indices), 1));
+var wires = new THREE.LineSegments(wire_geometry, wire_material);
+wires.name = "wires";
+group.add(wires)
 
 // Lines
 var line_geometry = new THREE.BufferGeometry();
@@ -46,7 +55,7 @@ line_material.transparent = true;
 line_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
 line_geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(line_indices), 1));
 var lines = new THREE.LineSegments(line_geometry, line_material);
-lines.name = "face";
+lines.name = "lines";
 group.add(lines)
 
 // Add to scene
@@ -83,7 +92,6 @@ function onWindowResize() {
     camera.aspect = getWidth() / getHeight();
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
-    controls.handleResize();
 }
 
 // ViewHelper
@@ -118,6 +126,19 @@ async function terminalFunc() {
         term.output(ansi_up.ansi_to_html(output+`List of all functions:
         clear → clears the terminal output
         test  → confirms terminal is working!`))
+    } else if (terminal_msg.startsWith("rotate")) {
+        terminal_msg = terminal_msg.split(" ")
+        const dir = terminal_msg[1].toLowerCase()
+        const deg = parseFloat(terminal_msg[2])
+        // TODO: Figure out how to rotate view helper too
+        if (dir == 'z') {
+            group.rotation.y = Math.PI/180 * deg
+        } else if (dir == 'y') {
+            group.rotation.z = Math.PI/180 * deg
+        } else if (dir == 'x') {
+            group.rotation.x = Math.PI/180 * deg
+        }
+        term.output(ansi_up.ansi_to_html(output+`Rotated ${deg.toString()} degrees about +${dir}`))
     } else if (terminal_msg == "test") {
         term.output(ansi_up.ansi_to_html(output+"It's working!"))
     } else if (terminal_msg == "clear") {
