@@ -32,13 +32,15 @@ jobs:
         uses: actions/checkout@main
       - name: Fetch pyNastran model
         id: fetch-model
-        run: "curl --output ISat_Dploy_Sm.dat \"https://raw.githubusercontent.com/SteveDoyle2/pyNastran/main/models/iSat/ISat_Dploy_Sm.dat\""
+        # run: "curl --output ISat_Dploy_Sm.dat \"https://raw.githubusercontent.com/SteveDoyle2/pyNastran/main/models/iSat/ISat_Dploy_Sm.dat\""
+        run: "curl --output bwb_saero.bdf \"https://raw.githubusercontent.com/SteveDoyle2/pyNastran/main/models/bwb/bwb_saero.bdf\""
       - name: Install femview
         id: install-femview
         run: "sudo pip3 install -e ."
       - name: Build HTML
         id: build-html
-        run: "femview ISat_Dploy_Sm.dat"
+        # run: "femview ISat_Dploy_Sm.dat"
+        run: "femview bwb_saero.bdf"
       - name: Setup Pages
         uses: actions/configure-pages@main
       - name: Upload artifact
