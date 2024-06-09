@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
       - name: Fetch pyNastran model
         id: fetch-model
         run: "curl --output ISat_Dploy_Sm.dat \"https://raw.githubusercontent.com/SteveDoyle2/pyNastran/main/models/iSat/ISat_Dploy_Sm.dat\""
@@ -40,9 +40,9 @@ jobs:
         id: build-html
         run: "femview ISat_Dploy_Sm.dat"
       - name: Setup Pages
-        uses: actions/configure-pages@v1
+        uses: actions/configure-pages@main
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@main
         with:
           # Upload entire repository
           path: '.'
