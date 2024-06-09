@@ -3,9 +3,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // Things to replace
 let nodes = REPLACE_NODES;
-let face_indices = REPLACE_FACES;
-let wire_indices = REPLACE_WIRES;
-let line_indices = REPLACE_LINES;
+let raw_faces = REPLACE_FACES;
+let raw_wires = REPLACE_WIRES;
+let raw_lines = REPLACE_LINES;
 
 // Create scene
 let scene = new THREE.Scene();
@@ -30,33 +30,39 @@ var points = new THREE.Points( point_geometry, point_material );
 group.add(points)
 
 // Faces
-var face_geometry = new THREE.BufferGeometry();
-const face_material = new THREE.MeshPhongMaterial( { color: color } );
-face_material.transparent = true;
-face_material.side = THREE.DoubleSide;
-face_geometry.setIndex( face_indices );
-face_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
-const faces = new THREE.Mesh( face_geometry, face_material );
-faces.name = "face";
-group.add(faces)
+for (const [source, face_indices] of Object.entries(raw_faces)) {
+    var face_geometry = new THREE.BufferGeometry();
+    const face_material = new THREE.MeshPhongMaterial( { color: color } );
+    face_material.transparent = true;
+    face_material.side = THREE.DoubleSide;
+    face_geometry.setIndex( face_indices );
+    face_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
+    const faces = new THREE.Mesh( face_geometry, face_material );
+    faces.name = source;
+    group.add(faces)
+}
 // Wires
-var wire_geometry = new THREE.BufferGeometry();
-var wire_material = new THREE.LineBasicMaterial( {color: 0x000000} );
-wire_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
-wire_geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(wire_indices), 1));
-var wires = new THREE.LineSegments(wire_geometry, wire_material);
-wires.name = "wires";
-group.add(wires)
+for (const [source, wire_indices] of Object.entries(raw_wires)) {
+    var wire_geometry = new THREE.BufferGeometry();
+    var wire_material = new THREE.LineBasicMaterial( {color: 0x000000} );
+    wire_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
+    wire_geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(wire_indices), 1));
+    var wires = new THREE.LineSegments(wire_geometry, wire_material);
+    wires.name = source;
+    group.add(wires)
+}
 
 // Lines
-var line_geometry = new THREE.BufferGeometry();
-var line_material = new THREE.LineBasicMaterial( {color: color, linewidth: 10} );
-line_material.transparent = true;
-line_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
-line_geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(line_indices), 1));
-var lines = new THREE.LineSegments(line_geometry, line_material);
-lines.name = "lines";
-group.add(lines)
+for (const [source, line_indices] of Object.entries(raw_lines)) {
+    var line_geometry = new THREE.BufferGeometry();
+    var line_material = new THREE.LineBasicMaterial( {color: color, linewidth: 10} );
+    line_material.transparent = true;
+    line_geometry.setAttribute('position', new THREE.BufferAttribute( grids, 3));
+    line_geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(line_indices), 1));
+    var lines = new THREE.LineSegments(line_geometry, line_material);
+    lines.name = source;
+    group.add(lines)
+}
 
 // Add to scene
 scene.add(group)
@@ -72,6 +78,8 @@ camera.position.set( -frustumSize, frustumSize, frustumSize );
 
 // Controls
 let controls = new OrbitControls( camera, renderer.domElement );
+controls.zoomSpeed = 2.;
+controls.autoRotateSpeed = 3.0;
 
 // lights
 const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
@@ -117,6 +125,7 @@ let ansi_up = new ansiUp();
 let term = Termino(document.getElementById("terminal"))
 const output = "\x1b[38;5;186m"
 const invalid = "\x1b[38;5;167m"
+let spin = false;
 
 async function terminalFunc() {
     // call the terminal for initial input
@@ -124,8 +133,25 @@ async function terminalFunc() {
 
     if (terminal_msg == "help") {
         term.output(ansi_up.ansi_to_html(output+`List of all functions:
-        clear → clears the terminal output
-        test  → confirms terminal is working!`))
+        clear      → clears the terminal output
+        test       → confirms terminal is working!
+        spin start → Begins rotating model about Z axis
+        spin stop  → Stops rotation
+        `))
+    } else if (terminal_msg.startsWith("spin start")) {
+        term.output(ansi_up.ansi_to_html(output+"Spinning!"))
+        controls.autoRotate = true;
+        controls.enablePan = false;
+        controls.enableZoom = false;
+        controls.enableRotate = false;
+        spin = true;
+    } else if (terminal_msg.startsWith("spin stop")) {
+        term.output(ansi_up.ansi_to_html(output+"Stopped spinning."))
+        controls.autoRotate = false;
+        controls.enablePan = true;
+        controls.enableZoom = true;
+        controls.enableRotate = true;
+        spin = false;
     } else if (terminal_msg.startsWith("rotate")) {
         terminal_msg = terminal_msg.split(" ")
         const dir = terminal_msg[1].toLowerCase()
@@ -161,5 +187,6 @@ function animate() {
     const delta = clock.getDelta();
     if ( view.animating ) view.update( delta );
     view.render( renderer );
+    controls.update()
 }
 animate();
