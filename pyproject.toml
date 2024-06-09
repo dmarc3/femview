@@ -20,10 +20,11 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python"
 ]
-dynamic = ["dependencies"]
-
-[tool.setuptools.dynamic]
-dependencies = {file = "requirements.txt"}
+dependencies = [
+  "click",
+  "jsmin",
+  "pyNastran",
+]
 
 [project.urls]
 Repository = "https://github.com/dmarc3/femview"
