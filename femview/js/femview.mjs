@@ -78,6 +78,8 @@ camera.position.set( -frustumSize, frustumSize, frustumSize );
 
 // Controls
 let controls = new OrbitControls( camera, renderer.domElement );
+controls.zoomSpeed = 2.;
+controls.autoRotateSpeed = 3.0;
 
 // lights
 const ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
@@ -123,6 +125,7 @@ let ansi_up = new ansiUp();
 let term = Termino(document.getElementById("terminal"))
 const output = "\x1b[38;5;186m"
 const invalid = "\x1b[38;5;167m"
+let spin = false;
 
 async function terminalFunc() {
     // call the terminal for initial input
@@ -130,8 +133,25 @@ async function terminalFunc() {
 
     if (terminal_msg == "help") {
         term.output(ansi_up.ansi_to_html(output+`List of all functions:
-        clear → clears the terminal output
-        test  → confirms terminal is working!`))
+        clear      → clears the terminal output
+        test       → confirms terminal is working!
+        spin start → Begins rotating model about Z axis
+        spin stop  → Stops rotation
+        `))
+    } else if (terminal_msg.startsWith("spin start")) {
+        term.output(ansi_up.ansi_to_html(output+"Spinning!"))
+        controls.autoRotate = true;
+        controls.enablePan = false;
+        controls.enableZoom = false;
+        controls.enableRotate = false;
+        spin = true;
+    } else if (terminal_msg.startsWith("spin stop")) {
+        term.output(ansi_up.ansi_to_html(output+"Stopped spinning."))
+        controls.autoRotate = false;
+        controls.enablePan = true;
+        controls.enableZoom = true;
+        controls.enableRotate = true;
+        spin = false;
     } else if (terminal_msg.startsWith("rotate")) {
         terminal_msg = terminal_msg.split(" ")
         const dir = terminal_msg[1].toLowerCase()
@@ -167,5 +187,6 @@ function animate() {
     const delta = clock.getDelta();
     if ( view.animating ) view.update( delta );
     view.render( renderer );
+    controls.update()
 }
 animate();
