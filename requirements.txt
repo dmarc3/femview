@@ -1,3 +1,0 @@
-pyNastran
-jsmin
-click
